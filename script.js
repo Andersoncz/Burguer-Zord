@@ -12,8 +12,8 @@ let cart = [];
 
 //Abrir modal do carrinho
 cartBtn.addEventListener("click", () => {
-    updateCart();
-    // Atualiza o contador do carrinho
+  updateCartModal();
+  // Atualiza o contador do carrinho
   cartModal.style.display = " flex";
 });
 //fechar modal do carrinho
@@ -47,10 +47,10 @@ function addToCart(name, price) {
       quantity: 1,
     });
   }
-  updateCart();
+  updateCartModal();
 }
 //Função para atualizar o carrinho
-function updateCart() {
+function updateCartModal() {
   cartItemsContainer.innerHTML = "";
   let total = 0;
 
@@ -65,24 +65,46 @@ function updateCart() {
                 <p class="font-medium mt-2">R$ ${item.price}</p>
             </div>
             
-            <button>
+            <button class="remove-from-cart-btn"  data-name="${item.name}"
+            bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">
                 Remover
             </button>
      
     </div>
-    `
+    `;
     total += item.price * item.quantity;
 
-    
     cartItemsContainer.appendChild(cartItemElement);
-});
-    cartTotal.textContent = total.toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-        });
-// Atualiza o contador do carrinho
-    cartCounter.innerHTML = cart.length
+  });
+  cartTotal.textContent = total.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+  // Atualiza o contador do carrinho
+  cartCounter.innerHTML = cart.length;
 }
-            
-            
-            
+// Evento para remover item do carrinho
+cartItemsContainer.addEventListener("click", (e) => {
+  if (e.target.classList.contains("remove-from-cart-btn")) {
+    const name = e.target.getAttribute("data-name");
+    
+
+      removeItemCart(name);
+  }
+});
+const removeItemCart = (name) => {
+  const index = cart.findIndex((item) => item.name === name);
+  // Verifica se o item existe no carrinho
+  if (index !== -1) {
+    const item = cart[index];
+    // Se a quantidade for maior que 1, diminui a quantidade
+    if (item.quantity > 1) {
+      item.quantity -= 1;
+      updateCartModal();
+      // Atualiza o contador do carrinho
+      return;
+    }
+    cart.splice(index, 1); // Remove o item do carrinho
+    updateCartModal();
+  }
+};
